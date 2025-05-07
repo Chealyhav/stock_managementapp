@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://stock_0gr5_user:HgADifCBst7jKTi5QHUDRoChw1khsufy@dpg-d09hvoeuk2gs73ddnbrg-a.oregon-postgres.render.com/stock_0gr5
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=stock_management
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  stock-app:
+    build: .
+    ports:
+      - '3003:3003'
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
